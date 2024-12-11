@@ -130,8 +130,12 @@ ENV/
 env.bak/
 venv.bak/
 
-data/data_dmitrii.csv
+data/data_dmitrii_maks.csv
+data/data_vladislav.csv
+data/data_nikita.csv
+data/data.csv
 data/complectations_dmitrii.csv
+
 parser/pages_to_scrap_dmitrii.xlsx
 # Spyder project settings
 .spyderproject
