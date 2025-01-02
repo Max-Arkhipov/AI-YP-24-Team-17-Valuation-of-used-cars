@@ -1,12 +1,13 @@
 # Страница анализа данных
 # импортируем библиотеки
-import streamlit as st
+# to run: python -m streamlit run deployment/frontend/pages/eda.py
 import plotly.graph_objs as go
 import pandas as pd
+from deployment.frontend.utils.api_client import *
 
 st.title('Исследовательский анализ данных')
 st.subheader('Загрузка файла')
-uploaded_file = st.file_uploader("Выберите файл csv")
+uploaded_file = st.file_uploader("Выберите файл csv", type="csv")
 st.markdown('''Загрузите файл csv с данными об автомобилях.  
 В файле должны содержаться следующие поля:
 - `url_car`	- Ссылка на объявление,
@@ -121,14 +122,22 @@ if uploaded_file is not None:
         'cyl_count': float  # Могут быть пропуски
     }
     try:
+        # Создаём датафрейм для анализа
         df = pd.read_csv(uploaded_file,
                      dtype=dtypes_of_data, parse_dates=['ann_date'])
     except:
         st.error('Ошибка загрузки файла. Проверьте правильность ввода файла')
 
+    # Загружаем файл в серверную часть
+    result = upload_file("api/v1/dataset/upload", uploaded_file)
+    if result['message'] == "CSV dataset uploaded successfully":
+        st.success("Файл успешно загружен и отправлен на сервер!")
+    else:
+        st.error('Ошибка отправки файла на сервер.')
+
+
     if df.shape[0] > 0:
-        # Видим, что представлены авто, которые могут иметь разное
-        # количество мест по желанию. Создадим столбец с максимальным
+        # Создадим столбец с максимальным
         # количеством мест и с минимальным
         df.loc[df['seat_count'].str.len() > 2, 'seat_count'] = \
             df[df['seat_count'].str.len() > 2]['seat_count'].str.split(', ').apply(
