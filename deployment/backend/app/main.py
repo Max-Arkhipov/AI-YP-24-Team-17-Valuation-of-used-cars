@@ -1,24 +1,11 @@
 # Главный файл для запуска FastAPI-сервиса.
-
 import uvicorn
 from fastapi import FastAPI
 from deployment.backend.app.routers import api
-
-# import logging
-# from logging.handlers import TimedRotatingFileHandler
-
-# # Configure logging
-# log_handler = TimedRotatingFileHandler("logs/app.log", when="midnight", interval=1)
-# log_handler.suffix = "%Y%m%d"
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-#     handlers=[log_handler],
-# )
-# logger = logging.getLogger(__name__)
+from deployment.backend.app.utils import setup_logging
 
 
-
+logger = setup_logging()
 
 app = FastAPI(title="ML Model Management API",
               docs_url="/api/openapi",
@@ -27,8 +14,16 @@ app = FastAPI(title="ML Model Management API",
 # Include API router
 app.include_router(api.router, prefix="/api/v1", tags=["ML API"])
 
+@app.middleware("http")
+async def log_requests(request, call_next):
+    logger.info(f"Incoming request: {request.method} {request.url}")
+    response = await call_next(request)
+    logger.info(f"Response: {response.status_code} for {request.method} {request.url}")
+    return response
+
 @app.get("/", tags=["Health Check"])
 def read_root():
+    logger.info("Health check endpoint called")
     return {"message": "ML API is running!"}
 
 if __name__ == "__main__":

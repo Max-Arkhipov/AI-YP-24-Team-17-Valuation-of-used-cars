@@ -4,3 +4,5 @@ utils==1.0.2
 scikit-learn==1.6.0
 pydantic==2.10.4
 numpy==2.2.1
+json-log-formatter==0.5.1
+logstash-formatter==0.5.17
