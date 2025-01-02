@@ -2,14 +2,16 @@
 
 import pandas as pd
 import numpy as np
+import csv
 from fastapi import HTTPException
 from fastapi.responses import FileResponse
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
 import os
-from deployment.backend.app.preprocessing import preproc
+from deployment.backend.app.preprocessing import *
 from deployment.backend.app.class_model import FullModel
-from deployment.backend.app.preprocessing_x import preproc_x
+
+TEMP_PATH = "temp"
 
 # In-memory storage for models and data
 models = {}
@@ -18,22 +20,79 @@ datasets_prep = {}
 learning_curves = {}
 loaded_model = None
 
+
 async def upload_csv_dataset(file):
     try:
         # Save uploaded file temporarily
-        temp_file_path = f"/tmp/{file.filename}"
+        content = file.file.read()
+        temp_file_path = os.path.join(TEMP_PATH, file.filename)
         with open(temp_file_path, "wb") as temp_file:
-            temp_file.write(await file.read())
+            temp_file.write(content)
 
         # Load the CSV into a DataFrame
-        df = pd.read_csv(temp_file_path)
+        # Зададим типы данных в колонках.
+        dtypes_of_data = {
+            'url_car': str,
+            'car_make': str,
+            'car_model': str,
+            'car_gen': str,
+            'car_type': str,
+            'car_compl': str,
+            'ann_id': str,
+            'car_price': float,
+            'ann_city': str,
+            'link_cpl': str,
+            'avail': str,
+            'year': int,
+            'mileage': int,
+            'color': str,
+            'eng_size': float,
+            'eng_power': float,
+            'eng_power_kw': float,
+            'eng_type': str,
+            'pow_resrv': str,
+            'options': str,
+            'transmission': str,
+            'drive': str,
+            'st_wheel': str,
+            'condition': str,
+            'count_owner': str,
+            'original_pts': str,
+            'customs': str,
+            'url_compl': str,
+            'state_mark': str,
+            'class_auto': str,
+            'door_count': float,  # могут быть пропуски
+            'seat_count': str,  # могут быть значения с диапазоном, пропуски
+            'long': float,
+            'width': float,
+            'height': float,
+            'clearence': str,  # могут быть значения с диапазоном
+            'v_bag': str,  # могут быть значения с диапазоном, пропуски
+            'v_tank': float,
+            'curb_weight': float,
+            'gross_weight': float,
+            'front_brakes': str,
+            'rear_brakes': str,
+            'max_speed': float,
+            'acceleration': float,
+            'fuel_cons': float,
+            'fuel_brand': str,
+            'engine_loc1': str,
+            'engine_loc2': str,
+            'turbocharg': str,
+            'max_torq': float,
+            'cyl_count': float  # Могут быть пропуски
+        }
+        df = pd.read_csv(temp_file_path, dtype=dtypes_of_data, parse_dates=['ann_date'])
         datasets["current"] = df
         os.remove(temp_file_path)
 
         return {"message": "CSV dataset uploaded successfully", "df.isnull": df.isnull().sum().to_dict()}
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Failed to process CSV file: {str(e)}")
-
+    finally:
+        file.file.close()
 
 def perform_eda():
     if "current" not in datasets:
