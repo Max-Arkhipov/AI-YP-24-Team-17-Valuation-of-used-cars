@@ -6,177 +6,121 @@ import plotly.graph_objects as go
 from deployment.frontend.utils.api_client import *
 
 def show_page():
-    # st.header("Анализ данных")
-    # uploaded_file = st.file_uploader("Загрузите датасет", type=["csv"])
-    # st.session_state.train = None
-    #
-    # if uploaded_file is not None:
-    #
-    #     dtypes_of_data = {
-    #         'url_car': str,
-    #         'car_make': str,
-    #         'car_model': str,
-    #         'car_gen': str,
-    #         'car_type': str,
-    #         'car_compl': str,
-    #         'ann_id': str,
-    #         'car_price': float,
-    #         'ann_city': str,
-    #         'link_cpl': str,
-    #         'avail': str,
-    #         'year': int,
-    #         'mileage': int,
-    #         'color': str,
-    #         'eng_size': float,
-    #         'eng_power': float,
-    #         'eng_power_kw': float,
-    #         'eng_type': str,
-    #         'pow_resrv': str,
-    #         'options': str,
-    #         'transmission': str,
-    #         'drive': str,
-    #         'st_wheel': str,
-    #         'condition': str,
-    #         'count_owner': str,
-    #         'original_pts': str,
-    #         'customs': str,
-    #         'url_compl': str,
-    #         'state_mark': str,
-    #         'class_auto': str,
-    #         'door_count': float,  # могут быть пропуски
-    #         'seat_count': str,  # могут быть значения с диапазоном, пропуски
-    #         'long': float,
-    #         'width': float,
-    #         'height': float,
-    #         'clearence': str,  # могут быть значения с диапазоном
-    #         'v_bag': str,  # могут быть значения с диапазоном, пропуски
-    #         'v_tank': float,
-    #         'curb_weight': float,
-    #         'gross_weight': float,
-    #         'front_brakes': str,
-    #         'rear_brakes': str,
-    #         'max_speed': float,
-    #         'acceleration': float,
-    #         'fuel_cons': float,
-    #         'fuel_brand': str,
-    #         'engine_loc1': str,
-    #         'engine_loc2': str,
-    #         'turbocharg': str,
-    #         'max_torq': float,
-    #         'cyl_count': float  # Могут быть пропуски
-    #     }
-    #     df = pd.read_csv(uploaded_file, dtype=dtypes_of_data)
-    #     df = df.rename(columns={'Unnamed: 0': 'Unnamed'})
-    #     st.write("Просмотр данных:")
-    #     st.dataframe(df)
-    #
-    #     st.write("Общая информация о полях набора данных:")
-    #     df_types = pd.DataFrame(df.dtypes)
-    #     df_nulls = df.count()
-    #
-    #     df_null_count = pd.concat([df_nulls, df_types], axis=1)
-    #     df_null_count = df_null_count.reset_index()
-    #
-    #     # Переименуем поля
-    #     col_names = ["features", "non_null_counts", "types"]
-    #     df_null_count.columns = col_names
-    #
-    #     st.write(df_null_count)
-    #
-    #     st.write("Основные характеристики числовых признаков:")
-    #     st.write(df.describe(include=(float, int)))
-    #
-    #     st.write("Основные характеристики нечисловых признаков:")
-    #     st.write(df.describe(include=object))
-    #
-    #     st.write("Распределение признака/целевой переменной:")
-    #     column = st.selectbox("Выберите признак/целевую переменную", df.columns)
-    #     st.bar_chart(df[column].value_counts())
-    #
-    #     # Отправка файла в API
-    #     st.header("Отправить файл в API")
-    #     if st.button("Отправить"):
-    #         response = upload_file("api/v1/dataset/upload", uploaded_file)
-    #         if response.status_code == 200:
-    #             result = response.json()
-    #             st.success(result['message'])
-    #         else:
-    #             st.error('Ошибка отправки файла на сервер.')
-    #
-    #     # Предобработка датасета в API
-    #     st.header("Обработать датасет в API")
-    #     if st.button("Обработать"):
-    #         with st.spinner("Предобработка данных, пожалуйста подождите..."):
-    #             response = preprocess_data("api/v1/dataset/preprocessing")
-    #         if response.status_code == 200:
-    #             result = response.json()
-    #             st.success(result['message'])
-    #             st.session_state.train = pd.DataFrame(result['train'])
-    #         else:
-    #             st.error('Ошибка обработки файла на сервере.')
-    #
-    # if st.session_state.train is not None:
-    #     st.write("Просмотр обработанных данных:")
-    #
-    #     st.dataframe(st.session_state.train)
-    #     train = st.session_state.train
-
+    st.header("Анализ данных")
     uploaded_file = st.file_uploader("Загрузите датасет", type=["csv"])
+    st.session_state.train = None
 
     if uploaded_file is not None:
+
         dtypes_of_data = {
-            'car_make': 'category',
-            'car_model': 'category',
-            'car_gen': 'category',  # в датасете Максима нет
-            'car_type': 'category',
-            'car_compl': 'object',  # в датасете Максима нет
-            # 'ann_date': datetime64[ns],
+            'url_car': str,
+            'car_make': str,
+            'car_model': str,
+            'car_gen': str,
+            'car_type': str,
+            'car_compl': str,
+            'ann_id': str,
             'car_price': float,
-            'ann_city': 'category',  # в датасете Максима нет
-            'avail': 'category',  # в датасете Максима нет
+            'ann_city': str,
+            'link_cpl': str,
+            'avail': str,
             'year': int,
-            'mileage': float,
-            'color': 'category',
+            'mileage': int,
+            'color': str,
             'eng_size': float,
-            'eng_power': int,
-            'eng_type': 'category',
-            'pow_resrv': int,  # в датасете Максима нет
-            'options': 'object',  # в датасете Максима нет
-            'transmission': 'category',
-            'drive': 'category',
-            'st_wheel': 'category',
-            'count_owner': int,
-            'original_pts': 'category',  # в датасете Максима нет
-            'state_mark': 'category',
-            'class_auto': 'category',
-            'door_count': int,
-            'long': int,
-            'width': int,
-            'height': int,
-            'clearence': int,
-            'v_tank': int,
-            'curb_weight': int,
-            'front_brakes': 'category',
-            'rear_brakes': 'category',
-            'max_speed': int,
+            'eng_power': float,
+            'eng_power_kw': float,
+            'eng_type': str,
+            'pow_resrv': str,
+            'options': str,
+            'transmission': str,
+            'drive': str,
+            'st_wheel': str,
+            'condition': str,
+            'count_owner': str,
+            'original_pts': str,
+            'customs': str,
+            'url_compl': str,
+            'state_mark': str,
+            'class_auto': str,
+            'door_count': float,  # могут быть пропуски
+            'seat_count': str,  # могут быть значения с диапазоном, пропуски
+            'long': float,
+            'width': float,
+            'height': float,
+            'clearence': str,  # могут быть значения с диапазоном
+            'v_bag': str,  # могут быть значения с диапазоном, пропуски
+            'v_tank': float,
+            'curb_weight': float,
+            'gross_weight': float,
+            'front_brakes': str,
+            'rear_brakes': str,
+            'max_speed': float,
             'acceleration': float,
             'fuel_cons': float,
-            'fuel_brand': 'category',
-            'engine_loc1': 'category',
-            'engine_loc2': 'category',
-            'turbocharg': 'category',
-            'max_torq': int,
-            'cyl_count': int,
-            'seat_count': int,
-            'v_bag': int,
-            'acc_capacity': int,  # в датасете Максима нет
-            'age': int,  # в датасете Максима нет
-            'age_mod': float,  # в датасете Максима нет
-            'mileage_mod': float,  # в датасете Максима нет
-            'acceleration_mod': float,  # в датасете Максима нет
-            'cyl_count_mod': float  # в датасете Максима нет
+            'fuel_brand': str,
+            'engine_loc1': str,
+            'engine_loc2': str,
+            'turbocharg': str,
+            'max_torq': float,
+            'cyl_count': float  # Могут быть пропуски
         }
-        train = pd.read_csv(uploaded_file, dtype=dtypes_of_data, parse_dates=['ann_date'])
+        df = pd.read_csv(uploaded_file, dtype=dtypes_of_data)
+        df = df.rename(columns={'Unnamed: 0': 'Unnamed'})
+        st.write("Просмотр данных:")
+        st.dataframe(df)
+
+        st.write("Общая информация о полях набора данных:")
+        df_types = pd.DataFrame(df.dtypes)
+        df_nulls = df.count()
+
+        df_null_count = pd.concat([df_nulls, df_types], axis=1)
+        df_null_count = df_null_count.reset_index()
+
+        # Переименуем поля
+        col_names = ["features", "non_null_counts", "types"]
+        df_null_count.columns = col_names
+
+        st.write(df_null_count)
+
+        st.write("Основные характеристики числовых признаков:")
+        st.write(df.describe(include=(float, int)))
+
+        st.write("Основные характеристики нечисловых признаков:")
+        st.write(df.describe(include=object))
+
+        st.write("Распределение признака/целевой переменной:")
+        column = st.selectbox("Выберите признак/целевую переменную", df.columns)
+        st.bar_chart(df[column].value_counts())
+
+        # Отправка файла в API
+        st.header("Отправить файл в API")
+        if st.button("Отправить"):
+            response = upload_file("api/v1/dataset/upload", uploaded_file)
+            if response.status_code == 200:
+                result = response.json()
+                st.success(result['message'])
+            else:
+                st.error('Ошибка отправки файла на сервер.')
+
+        # Предобработка датасета в API
+        st.header("Обработать датасет в API")
+        if st.button("Обработать"):
+            with st.spinner("Предобработка данных, пожалуйста подождите..."):
+                response = preprocess_data("api/v1/dataset/preprocessing")
+            if response.status_code == 200:
+                result = response.json()
+                st.success(result['message'])
+                st.session_state.train = pd.DataFrame(result['train'])
+            else:
+                st.error('Ошибка обработки файла на сервере.')
+
+    if st.session_state.train is not None:
+        st.write("Просмотр обработанных данных:")
+
+        st.dataframe(st.session_state.train)
+        train = st.session_state.train
+
         # Уменьшим избыточную разрядность чисел
         fcols = train.select_dtypes('float').columns
         icols = train.select_dtypes('integer').columns
