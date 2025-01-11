@@ -23,7 +23,7 @@ services:
     depends_on:
       - elasticsearch
     ports:
-      - "5400:5000/tcp"
+      - "5000:5000/tcp"
       - "9600:9600"
       - "5044:5044"
     volumes:
