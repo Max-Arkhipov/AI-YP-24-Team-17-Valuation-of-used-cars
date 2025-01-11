@@ -5,3 +5,6 @@ logs/
 .env
 .vscode/
 *.db
+els
+.DS_Store
+Thumbs.db
